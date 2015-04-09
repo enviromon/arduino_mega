@@ -391,7 +391,7 @@ void setup()
   setTime(0,0,0,1,1,2013);
   setSyncProvider(RTC.get);
 
-  Serial1.begin(115200);
+  Serial.begin(115200);
 }
 
 

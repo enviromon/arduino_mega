@@ -3,15 +3,20 @@
  /!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!UPDATE SENSOR VALUES!!
  /!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
-
+#include <OneWire.h>
+#include <DallasTemperature.h>
+ 
+// Data wire is plugged into pin 2 on the Arduino
+#define ONE_WIRE_BUS 2
+ 
 //READ ALL SENSOR VALUES AND CONVERT FOR LCD DISPLAY
 void updateSensorValues() {
  
   analogReference(DEFAULT);  //Seems more accurate.
   
  /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+ !!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!PH SENSORS!!
+ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
   /*PH1------------------------------------------------*/
   float pH1Sum = 0;
   int j = 0;
@@ -69,7 +74,29 @@ void updateSensorValues() {
  /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !!TEMPERATURE SENSOR!!TEMPERATURE SENSOR!!TEMPERATURE SENSOR!!TEMPERATURE SENSOR!!TEMPERATURE SENSOR!!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-  float TempSum = 0;
+   
+   /*!!!DS18B20 Reading.!!!*/
+
+// Setup a oneWire instance to communicate with any OneWire devices 
+// (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(ONE_WIRE_BUS);
+ 
+// Pass our oneWire reference to Dallas Temperature.
+DallasTemperature sensors(&oneWire);
+
+sensors.begin();
+
+TempValue = sensors.getTempCByIndex(0)); // Why "byIndex"? 
+    // You can have more than one IC on the same bus. 
+    // 0 refers to the first IC on the wire
+   if(isnan(TempValue)){
+    TempValue = 0;        
+  }
+  PString my_Temp_string(Temp_char, sizeof(Temp_char));
+  my_Temp_string.print(TempValue);
+  my_Temp_string.println(" C"); 
+   
+/*  float TempSum = 0;
   j = 0;
   analogRead(TempPin);  //Get ADC to switch to correct pin
   delay(15); //Wait for Pin to Change
@@ -91,6 +118,7 @@ void updateSensorValues() {
   my_Temp_string.print(TempValue);
   my_Temp_string.println(" C"); 
   
+*/
   
  /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !!HUMIDITY DHT11 SENSOR!!HUMIDITY DHT11 SENSOR!!HUMIDITY DHT11 SENSOR!!HUMIDITY DHT11 SENSOR!!HUMIDITY DHT11!!
